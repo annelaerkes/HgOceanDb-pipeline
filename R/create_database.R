@@ -390,11 +390,11 @@ PT_006 <- read_excel("../Data/Extracted_table_in_publication/Marumoto et al 2018
   ) |>
   pivot_longer(THG:DGM, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
   mutate(SPECIES_CONC = case_when(
-    SPECIES_NAME == "THG" & SPECIES_CONC < 0.15 ~ (-0.15), # (-1 * SPECIES_CONC),
-    SPECIES_NAME == "THG_D" & SPECIES_CONC < 0.15 ~ (-0.15), # (-1 * SPECIES_CONC),
-    SPECIES_NAME == "THG_P" & SPECIES_CONC < 0.06 ~ (-0.06), # (-1 * SPECIES_CONC),
-    SPECIES_NAME == "DGM" & SPECIES_CONC < 0.017 ~ (-0.017), # (-1 * SPECIES_CONC),
-    SPECIES_NAME == "MEHG_D" & SPECIES_CONC < 7.5 ~ (-7.5), # (-1 * SPECIES_CONC),
+    SPECIES_NAME == "THG" & SPECIES_CONC < 0.15 ~ (-0.15), 
+    SPECIES_NAME == "THG_D" & SPECIES_CONC < 0.15 ~ (-0.15), 
+    SPECIES_NAME == "THG_P" & SPECIES_CONC < 0.06 ~ (-0.06), 
+    SPECIES_NAME == "DGM" & SPECIES_CONC < 0.017 ~ (-0.017), 
+    SPECIES_NAME == "MEHG_D" & SPECIES_CONC < 7.5 ~ (-7.5), 
     TRUE ~ SPECIES_CONC
   ))
 
@@ -484,11 +484,10 @@ PT_010 <- read_excel("../Data/Extracted_table_in_publication/Lehnherr et al 2011
   drop_na(STATION) |>
   mutate(
     MONTH = month(DATE), LONGITUDE = as.numeric(LONGITUDE), THG = as.numeric(THG) / 200 * 1000, HG0 = as.numeric(HG0) / 200 * 1000, MEHG = as.numeric(MEHG) / 200 * 1000000,
-    DMHG = as.numeric(DMHG) / 200 * 1000000, MMHG = as.numeric(MMHG) / 200 * 1000000
-  ) |> # pM to fM
+    DMHG = as.numeric(DMHG) / 200 * 1000000, MMHG = as.numeric(MMHG) / 200 * 1000000 # pM to fM
+  ) |> 
   filter(STATION != "IE_3") |>
   dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, THG, HG0, MEHG, MMHG, DMHG) |>
-  filter(YEAR == 2007) |> # defensive: keep only this paper's data, in case the file isn't pre-filtered
   mutate(
     ID_DATASET = "PT-010",
     NAME_DATASET = "Lehnherr et al. 2011",
@@ -790,7 +789,7 @@ AP_001 <- read_delim("../Data/Data provided by authors/Jonsson et al 2022.txt", 
     PUBLISHED_IN_PAPER = "YES",
     DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2022.104105",
     DATASET_PUBLISHED = "NO",
-    COMMENT = "Unpublished data, included with author permission"
+    COMMENT = "Unpublished dataset, included with author permission"
   ) |>
   pivot_longer(THG:DMHG, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
   mutate(SPECIES_CONC = case_when(
@@ -812,18 +811,17 @@ AP_002 <- read_excel("../Data/Data provided by authors/Soerensen et al 2016.xlsx
   drop_na(STATION) |>
   mutate(
     MONTH = month(DATE), LONGITUDE = as.numeric(LONGITUDE), THG = as.numeric(THG) / 200 * 1000, HG0 = as.numeric(HG0) / 200 * 1000, MEHG = as.numeric(MEHG) / 200 * 1000000,
-    DMHG = as.numeric(DMHG) / 200 * 1000000, MMHG = as.numeric(MMHG) / 200 * 1000000
-  ) |> # pM to fM
+    DMHG = as.numeric(DMHG) / 200 * 1000000, MMHG = as.numeric(MMHG) / 200 * 1000000 # pM to fM
+  ) |> 
   filter(STATION != "IE_3") |>
   dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, THG, HG0, MEHG, MMHG, DMHG) |>
-  # filter(YEAR!=2007) |> # remove Lehnherr et al. 2011 data - read in with right citation
   mutate(
     ID_DATASET = "AP-002",
     NAME_DATASET = "Soerensen et al. 2016",
     PUBLISHED_IN_PAPER = "YES",
     DOI_PAPER_REFERENCE = "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GB005280",
     DATASET_PUBLISHED = "NO",
-    COMMENT = "Unpublished data, included with author permission",
+    COMMENT = "Unpublished dataset, included with author permission",
     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
   ) |>
   pivot_longer(THG:DMHG, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
@@ -1817,7 +1815,5 @@ SOURCES <- HgOceanDb |>
 currentDate <- Sys.Date()
 
 ## Write database files to csv ----
-# Written to Database/ at the repo root (sibling of R/, Data/) - deliberately NOT "data/", since
-# Windows is case-insensitive and that would collide with the existing Data/ folder.
 write_csv(HgOceanDb, paste("../Database/HgOceanDb_", currentDate, ".csv", sep = ""))
 write_csv(SOURCES, paste("../Database/Sources_", currentDate, ".csv", sep = ""), na = "")
