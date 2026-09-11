@@ -1,0 +1,27 @@
+# Raw source data - not committed. This includes:
+#  - datasets awaiting author/publisher permission before public release (see
+#    info/Hg_marine_dataset_info for github repository.xlsx, sheet: authors_contacted)
+#  - datasets that can't be redistributed without checking licensing (e.g. journal SI files)
+#  - the auto-download cache (Data/Not_redistributed_data/downloaded/), which is fully
+#    reproducible by re-running R/create_database.R and doesn't need to be version-controlled
+Data/Not_redistributed_data/
+
+# Read-in code for datasets awaiting author/publisher permission - moved out of
+# create_database.R (see the comment above the bind_rows() call there). Even though this is code
+# rather than data, it references specific unpublished datasets that aren't cleared for public
+# mention yet, so it stays out of the repo until permission is confirmed.
+R/pending_permission/
+
+# Compiled database output - date-stamped and regenerated fresh by R/create_database.R on every
+# run, so committing it would just accumulate near-duplicate CSVs in git history over time.
+Database/
+
+# Not yet reviewed for public release (stale paths, work-in-progress content, etc.) - revisit
+# before including.
+R/paper_analysis.R
+R/color_scales.R
+
+# R session clutter
+.Rhistory
+.Rproj.user/
+.RData
