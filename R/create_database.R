@@ -25,6 +25,40 @@ library(httr) # for submitting the Marine Regions download form (basin shapefile
 library(sf)
 sf_use_s2(FALSE)
 
+## First-run setup ----
+# Data/Not_redistributed_data/ and Database/ are gitignored, so a fresh clone of this repo won't
+# have them - creates the folders this script writes to, and checks up front for the handful of
+# datasets that need manual placement (everything else downloads automatically), so you find out
+# now rather than after a long download run.
+dir.create("../Database", showWarnings = FALSE)
+dir.create("../Data/Not_redistributed_data/downloaded", recursive = TRUE, showWarnings = FALSE)
+dir.create("../Data/Not_redistributed_data/GEOTRACES", recursive = TRUE, showWarnings = FALSE)
+dir.create("../Data/Not_redistributed_data/Bratkic et al 2016", recursive = TRUE, showWarnings = FALSE)
+dir.create("../Data/Not_redistributed_data/Starr et al 2025", recursive = TRUE, showWarnings = FALSE)
+
+manual_placement_needed <- c(
+  "../Data/Not_redistributed_data/GEOTRACES/GEOTRACES_IDP2021_Seawater_Discrete_Sample_Data_v1.csv" =
+    "GEOTRACES IDP2021v2 - BODC serves this through an interactive portal, not a direct URL. See the comment above ID_0007.",
+  "../Data/Not_redistributed_data/Bratkic et al 2016/JC068_Hg_submission.xlsx" =
+    "Bratkic et al. 2016 - same BODC portal limitation. See the comment above ID_0008.",
+  "../Data/Not_redistributed_data/Munson et al 2015_gbc20277-sup-0002-2015gb005120ts01.xls" =
+    "Munson et al. 2015 - publisher site is Cloudflare-blocked from automated downloads. See the comment above ID_0011.",
+  "../Data/Not_redistributed_data/Capo_Cayian 2022_es2c03784_si_002.xlsx" =
+    "Capo & Cayian 2022 - same Cloudflare limitation. See the comment above ID_0035.",
+  "../Data/Not_redistributed_data/Starr et al 2025/RR1815_DOoR Dissolved and Particulate Hg.xlsx" =
+    "Starr et al. 2025 (Leg 1) - not yet published to its repository. See the comment above ID_0054.",
+  "../Data/Not_redistributed_data/Starr et al 2025/RR1814_DOoR Dissolved and Particulate Hg.xlsx" =
+    "Starr et al. 2025 (Leg 2) - not yet published to its repository. See the comment above ID_0054."
+)
+missing_files <- names(manual_placement_needed)[!file.exists(names(manual_placement_needed))]
+if (length(missing_files) > 0) {
+  message(
+    "NOTE: ", length(missing_files), " dataset file(s) require manual placement before this ",
+    "script will complete - everything else downloads automatically. Missing:"
+  )
+  for (f in missing_files) message("  - ", f, "\n      (", manual_placement_needed[[f]], ")")
+}
+
 ## Download datasets hosted on public repositories directly from source ----
 # Fetches a file from `url` into `destfile` if it isn't already cached locally, then returns
 # destfile so it can be piped straight into read_csv()/read_excel()/etc. Keeping a local cache
@@ -1390,7 +1424,7 @@ ID_0051 <- read_csv(ID_0051_file) |>
 ### processed" (checked Sep 2026) - genuinely nothing to download yet, not an access restriction.
 ### Kept as a local file; check https://www.bco-dmo.org/dataset/950492 (and the related Leg 2
 ### dataset at /dataset/950510) periodically before the paper's final submission.
-ID_0054a <- read_excel("../Data/Not_redistributed_data/Starr 2025/RR1815_DOoR Dissolved and Particulate Hg.xlsx",
+ID_0054a <- read_excel("../Data/Not_redistributed_data/Starr et al 2025/RR1815_DOoR Dissolved and Particulate Hg.xlsx",
   skip = 11,
   col_types = c(c("numeric", "numeric", "numeric", "text", "date", "date"), (rep(c("numeric"), 21)))
 ) |>
@@ -1402,7 +1436,7 @@ ID_0054a <- read_excel("../Data/Not_redistributed_data/Starr 2025/RR1815_DOoR Di
     THG_P_FLAG = "Flag::Hg_SPT_CONC_PUMP::ht6atl", MMHG_P_FLAG = "Flag::Hg_MM_SPT_CONC_PUMP::blitbi"
   )
 
-ID_0054 <- read_excel("../Data/Not_redistributed_data/Starr 2025/RR1814_DOoR Dissolved and Particulate Hg.xlsx",
+ID_0054 <- read_excel("../Data/Not_redistributed_data/Starr et al 2025/RR1814_DOoR Dissolved and Particulate Hg.xlsx",
   skip = 11,
   col_types = c(c("numeric", "numeric", "numeric", "text", "date", "date"), (rep(c("numeric"), 21)))
 ) |>
