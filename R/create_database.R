@@ -5,12 +5,10 @@
 ### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #
 # The database consists of the following files (written to Database/ at the repo root):
-# CONTACT
-# SPECIES
-# SOURCES      - one row per contributing dataset, with citation/contact/repository info
+# Sources      - one row per contributing dataset, with citation/contact/repository info
 # HgOceanDb    - the compiled long-format database (one row per sample x species measurement)
 #
-# Created by: Anne L Soerensen, 2023
+# Created by: Anne L Soerensen, 2026
 ### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 ## Read libraries----
@@ -1809,7 +1807,7 @@ SOURCES <- HgOceanDb |>
     "ID_DATASET", "NAME_DATASET", "CRUISE_NAME", "PUBLISHED_IN_PAPER", "DOI_PAPER_REFERENCE",
     "DATASET_PUBLISHED", "REPOSITORY", "DOI_DATASET", "COMMENT"
   ) |>
-  distinct(ID_DATASET, NAME_DATASET, .keep_all = TRUE)
+  distinct(ID_DATASET, NAME_DATASET, CRUISE_NAME, .keep_all = TRUE)
 
 # add current date to written csv version
 currentDate <- Sys.Date()
