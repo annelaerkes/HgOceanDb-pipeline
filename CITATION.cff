@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: >-
+  If you use this pipeline, or a database generated from it, please cite the
+  publication below, plus the individual contributing datasets you used, per
+  their entries in Sources.csv (see README.md).
+title: HgOceanDb Pipeline
+type: software
+license: CC-BY-4.0
+url: "https://github.com/annelaerkes/HgOceanDb-pipeline"
+authors:
+  - family-names: Soerensen
+    given-names: Anne L.
+preferred-citation:
+  type: article
+  title: >-
+    Integrating coastal and open ocean observations to explore mercury
+    spatio-temporal variability in the global surface ocean
+  status: submitted
+  journal: Scientific Reports
+  year: 2026
+  authors:
+    - family-names: Soerensen
+      given-names: Anne L.
+    - family-names: Schartup
+      given-names: Amina T.
+    - family-names: Adams
+      given-names: Hanna M.
+    - family-names: Bieser
+      given-names: Johannes
+    - family-names: Dastoor
+      given-names: Ashu

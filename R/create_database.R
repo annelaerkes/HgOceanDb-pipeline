@@ -4,9 +4,9 @@
 #
 ### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #
-# The database consists of the following files (written to Database/ at the repo root):
-# Sources      - one row per contributing dataset, with citation/contact/repository info
-# HgOceanDb    - the compiled long-format database (one row per sample x species measurement)
+# Compiles the mercury-in-seawater datasets in this repository into HgOceanDb_<date>.csv and
+# Sources_<date>.csv, written to Database/ at the repo root. See README.md for how to run this
+# script, dataset categories, and citation requirements before using the output.
 #
 # Created by: Anne L Soerensen, 2026
 ### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -2308,5 +2308,5 @@ SOURCES <- HgOceanDb |>
 currentDate <- Sys.Date()
 
 ## Write database files to csv ----
-write_csv(HgOceanDb, paste("../Database/HgOceanDb_", currentDate, ".csv", sep = ""))
+write_csv(HgOceanDb, paste("../Database/HgOceanDb_", currentDate, ".csv", sep = ""), na = "")
 write_csv(SOURCES, paste("../Database/Sources_", currentDate, ".csv", sep = ""), na = "")
