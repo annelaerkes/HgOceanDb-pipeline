@@ -1,0 +1,14 @@
+HgOceanDb Pipeline is licensed under the Creative Commons Attribution 4.0
+International License (CC BY 4.0).
+
+To view a copy of this license, visit
+https://creativecommons.org/licenses/by/4.0/
+or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+
+This license applies to the contents of this repository as compiled here: the
+pipeline code (R/create_database.R and related scripts) and the datasets
+transcribed or included directly within it (see README.md for which
+datasets these are). It does not extend any rights to datasets that are
+merely downloaded or referenced by the script from their original,
+independently-hosted repositories - those remain subject to their own
+respective licenses and terms of use.
