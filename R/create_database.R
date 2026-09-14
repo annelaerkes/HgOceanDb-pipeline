@@ -831,6 +831,59 @@ AP_002 <- read_excel("../Data/Data provided by authors/Soerensen et al 2016.xlsx
     TRUE ~ SPECIES_CONC
   ))
 
+### AP-007 - Gosnell et al. 2017 ----
+### DL: THg = 0.091 pM, MeHg = 16 fM
+AP_007 <- read_excel("../Data/Data provided by authors/Gosnell et al 2017.xlsx", sheet = "modified_als", skip = 4) |>
+  drop_na(Date) |>
+  rename(
+    THG_D = "HgT_D (pM)", MEHG_D = "MeHg_D (pM)",
+    THG_P = "HgT_P (pM)", MEHG_P = "MeHg_P (pM)", DEPTH = "Depth (m)"
+  ) |>
+  mutate(MEHG_D = as.numeric(MEHG_D) * 1000, MEHG_P = MEHG_P * 1000, THG_P = as.numeric(THG_P)) |>
+  mutate(MONTH = as.numeric(format(Date, "%m")), YEAR = as.numeric(format(Date, "%y")) + 2000) |>
+  dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, THG_D, THG_P, MEHG_D, MEHG_P) |>
+  mutate(
+    ID_DATASET = "AP-007",
+    NAME_DATASET = "Gosnell et al. 2017",
+    PUBLISHED_IN_PAPER = "YES",
+    DOI_PAPER_REFERENCE = "https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lno.10490",
+    DATASET_PUBLISHED = "NO",
+    COMMENT = "Unpublished dataset, included with author permission",
+    ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
+  ) |>
+  pivot_longer(THG_D:MEHG_P, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
+  mutate(SPECIES_CONC = case_when(
+    SPECIES_NAME == "THG_D" & SPECIES_CONC <= 0.091 ~ (-1 * SPECIES_CONC),
+    SPECIES_NAME == "MEHG_D" & SPECIES_CONC <= 16 ~ (-1 * SPECIES_CONC),
+    SPECIES_NAME == "THG_P" & SPECIES_CONC <= 0.091 ~ (-1 * SPECIES_CONC),
+    SPECIES_NAME == "MEHG_P" & SPECIES_CONC <= 16 ~ (-1 * SPECIES_CONC),
+    TRUE ~ SPECIES_CONC
+  ))
+
+### AP-011 - Gosnell et al. 2023 ----
+### DL: THg = 0.2 pM
+AP_011 <- read_excel("../Data/Data provided by authors/Gosnell et al 2023.xlsx", skip = 2) |>
+  rename(DEPTH = "Depth [m]", LONGITUDE = "Longitude [degrees_east]", LATITUDE = "Latitude [degrees_north]", THG = "Hg [pM]") |>
+  filter(Flagg == 0) |>
+  dplyr::select(LATITUDE, LONGITUDE, DEPTH, THG) |>
+  mutate(
+    ID_DATASET = "AP-011",
+    YEAR = 2018,
+    MONTH = 9,
+    NAME_DATASET = "Gosnell et al. 2023",
+    CRUISE_NAME = "RV Alkor",
+    PUBLISHED_IN_PAPER = "YES",
+    DOI_PAPER_REFERENCE = "https://www.sciencedirect.com/science/article/pii/S0045653523027923",
+    DATASET_PUBLISHED = "NO",
+    COMMENT = "Unpublished dataset, included with author permission",
+    ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
+  ) |>
+  pivot_longer(THG, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
+  mutate(SPECIES_CONC = case_when(
+    SPECIES_NAME == "THG" & SPECIES_CONC <= 0.2 ~ (-1 * SPECIES_CONC),
+    TRUE ~ SPECIES_CONC
+  ))
+
 ### RD - repository-downloaded (auto-fetched, or manually placed when auto-fetch isn't possible) ----
 
 ### RD-001 - Soerensen et al 2018 ----
@@ -1746,11 +1799,9 @@ RD_020 <- read_excel(RD_020_file) |>
 #   AP-004 Kim et al. 2017 (2 cruises) - https://doi.org/10.1021/acs.est.6b04238
 #   AP-005 Yang et al. 2017 - https://doi.org/10.1016/j.dsr.2017.10.009
 #   AP-006 Lamborg unp. - https://doi.org/10.1016/j.chemgeo.2018.05.040
-#   AP-007 Gosnell et al. 2017 - https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lno.10490
 #   AP-008 Mastromonaco et al. 2017a - https://doi.org/10.1016/j.marchem.2017.03.001
 #   AP-009 Mastromonaco et al. 2017b - https://doi.org/10.1016/j.marchem.2017.02.003
 #   AP-010 Chen et al. 2024 (AUR) - https://www.sciencedirect.com/science/article/pii/S0043135424006936
-#   AP-011 Gosnell et al. 2023 (AUR) - https://www.sciencedirect.com/science/article/pii/S0045653523027923
 #   AP-012 Hammerschmidt and Bowman 2012 - https://www.sciencedirect.com/science/article/abs/pii/S0304420312000242
 #   AP-013 Eom et al. 2025 (AUR) - https://www.sciencedirect.com/science/article/pii/S026974912500627X
 #   AP-014 Carrasco et al. 2024 (AUR) - https://www.sciencedirect.com/science/article/pii/S0048969723062708
@@ -1887,35 +1938,6 @@ RD_020 <- read_excel(RD_020_file) |>
 #     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
 #   ) |>
 #   pivot_longer(THG_D, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC")
-
-### AP-007 - Gosnell et al. 2017 ----
-### DL: THg = 0.091 pM, MeHg = 16 fM
-# AP_007 <- read_excel("../Data/Data provided by authors/Gosnell et al 2017.xlsx", sheet = "modified_als", skip = 4) |>
-#   drop_na(Date) |>
-#   rename(
-#     THG_D = "HgT_D (pM)", MEHG_D = "MeHg_D (pM)",
-#     THG_P = "HgT_P (pM)", MEHG_P = "MeHg_P (pM)", DEPTH = "Depth (m)"
-#   ) |>
-#   mutate(MEHG_D = as.numeric(MEHG_D) * 1000, MEHG_P = MEHG_P * 1000, THG_P = as.numeric(THG_P)) |>
-#   mutate(MONTH = as.numeric(format(Date, "%m")), YEAR = as.numeric(format(Date, "%y")) + 2000) |>
-#   dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, THG_D, THG_P, MEHG_D, MEHG_P) |>
-#   mutate(
-#     ID_DATASET = "AP-007",
-#     NAME_DATASET = "Gosnell et al. 2017",
-#     PUBLISHED_IN_PAPER = "YES",
-#     DOI_PAPER_REFERENCE = "https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lno.10490",
-#     DATASET_PUBLISHED = "NO", # obtained via direct author contact, not from the paper's table as originally assumed
-#     COMMENT = "Contact author before use; not yet cleared for redistribution",
-#     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
-#   ) |>
-#   pivot_longer(THG_D:MEHG_P, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
-#   mutate(SPECIES_CONC = case_when(
-#     SPECIES_NAME == "THG_D" & SPECIES_CONC <= 0.091 ~ (-1 * SPECIES_CONC),
-#     SPECIES_NAME == "MEHG_D" & SPECIES_CONC <= 16 ~ (-1 * SPECIES_CONC),
-#     SPECIES_NAME == "THG_P" & SPECIES_CONC <= 0.091 ~ (-1 * SPECIES_CONC),
-#     SPECIES_NAME == "MEHG_P" & SPECIES_CONC <= 16 ~ (-1 * SPECIES_CONC),
-#     TRUE ~ SPECIES_CONC
-#   ))
 
 ### AP-008 - Mastromonaco et al. 2017a ----
 ### DL: THG ~ 0.3-1.2 pM, DGM = 0.0015 pM, MeHg = 5-6.5 fM
@@ -2097,30 +2119,6 @@ RD_020 <- read_excel(RD_020_file) |>
 #     TRUE ~ SPECIES_CONC
 #   ))
 
-### AP-011 - Gosnell et al. 2023 ----
-### DL: THg = 0.2 pM
-# AP_011 <- read_excel("../Data/Data provided by authors/Gosnell et al 2023.xlsx") |>
-#   rename(DEPTH = "Depth [m]", LONGITUDE = "Longitude [degrees_east]", LATITUDE = "Latitude [degrees_north]", THG = "Hg [pM]") |>
-#   filter(Flagg == 0) |>
-#   dplyr::select(LATITUDE, LONGITUDE, DEPTH, THG) |>
-#   mutate(
-#     ID_DATASET = "AP-011",
-#     YEAR = 2018,
-#     MONTH = 9,
-#     NAME_DATASET = "Gosnell et al. 2023",
-#     CRUISE_NAME = "RV Alkor",
-#     PUBLISHED_IN_PAPER = "YES",
-#     DOI_PAPER_REFERENCE = "https://www.sciencedirect.com/science/article/pii/S0045653523027923",
-#     DATASET_PUBLISHED = "NO",
-#     COMMENT = "Available upon request per the paper's data availability statement; already obtained from the authors, contact before use",
-#     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
-#   ) |>
-#   pivot_longer(THG, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
-#   mutate(SPECIES_CONC = case_when(
-#     SPECIES_NAME == "THG" & SPECIES_CONC <= 0.2 ~ (-1 * SPECIES_CONC),
-#     TRUE ~ SPECIES_CONC
-#   ))
-
 ### AP-012 - Hammerschmidt and Bowman 2012 ----
 ### DL: THg = 0.05 pM, MMHg = 2 fM
 # AP_012i <- read_excel("../Data/Data provided by authors/Hammerschmidt and Bowman 2012.xlsx", sheet = "SaFe")
@@ -2261,7 +2259,7 @@ DATA_COMBINED <- bind_rows(
   # MD - monitoring data
   MD_001,
   # AP - author-permitted (unpublished, with consent)
-  AP_001, AP_002,
+  AP_001, AP_002, AP_007, AP_011,
   # RD - repository-downloaded
   RD_001, RD_002, RD_003, RD_004, RD_005, RD_006, RD_007, RD_008, RD_009, RD_010,
   RD_011, RD_012, RD_013, RD_014, RD_015, RD_016, RD_017, RD_018, RD_019, RD_020
