@@ -786,6 +786,7 @@ AP_001 <- read_delim("../Data/Data provided by authors/Jonsson et al 2022.txt", 
     PUBLISHED_IN_PAPER = "YES",
     DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2022.104105",
     DATASET_PUBLISHED = "NO",
+    REPOSITORY = "Unpublished dataset, included with author permission",
     COMMENT = "Unpublished dataset, included with author permission"
   ) |>
   pivot_longer(THG:DMHG, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
@@ -818,6 +819,7 @@ AP_002 <- read_excel("../Data/Data provided by authors/Soerensen et al 2016.xlsx
     PUBLISHED_IN_PAPER = "YES",
     DOI_PAPER_REFERENCE = "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GB005280",
     DATASET_PUBLISHED = "NO",
+    REPOSITORY = "Unpublished dataset, included with author permission",
     COMMENT = "Unpublished dataset, included with author permission",
     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
   ) |>
@@ -848,6 +850,7 @@ AP_007 <- read_excel("../Data/Data provided by authors/Gosnell et al 2017.xlsx",
     PUBLISHED_IN_PAPER = "YES",
     DOI_PAPER_REFERENCE = "https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lno.10490",
     DATASET_PUBLISHED = "NO",
+    REPOSITORY = "Unpublished dataset, included with author permission",
     COMMENT = "Unpublished dataset, included with author permission",
     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
   ) |>
@@ -875,6 +878,7 @@ AP_011 <- read_excel("../Data/Data provided by authors/Gosnell et al 2023.xlsx",
     PUBLISHED_IN_PAPER = "YES",
     DOI_PAPER_REFERENCE = "https://www.sciencedirect.com/science/article/pii/S0045653523027923",
     DATASET_PUBLISHED = "NO",
+    REPOSITORY = "Unpublished dataset, included with author permission",
     COMMENT = "Unpublished dataset, included with author permission",
     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
   ) |>
@@ -1277,9 +1281,7 @@ RD_008_files <- map_chr(RD_008_stations, function(s) {
 })
 RD_008 <- map_dfr(RD_008_files, read_kohler_nc) |>
   mutate(YEAR = year(DATE), MONTH = month(DATE)) |>
-  pivot_longer(c(THG, MEHG), names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
-  drop_na(SPECIES_CONC) |>
-  dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, SPECIES_NAME, SPECIES_CONC) |>
+  dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, THG, MEHG) |>
   mutate(
     ID_DATASET = "RD-008",
     NAME_DATASET = "Kohler et al. 2022",
@@ -1289,6 +1291,8 @@ RD_008 <- map_dfr(RD_008_files, read_kohler_nc) |>
     REPOSITORY = "https://nmdc.no/",
     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
   ) |>
+  pivot_longer(c(THG, MEHG), names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
+  drop_na(SPECIES_CONC) |>
   mutate(SPECIES_CONC = case_when(
     SPECIES_NAME == "THG" & SPECIES_CONC <= 0.07 ~ (-1 * SPECIES_CONC),
     # SPECIES_NAME == 'MEHG' & SPECIES_CONC <= 1 ~ (-1 * SPECIES_CONC),
