@@ -46,7 +46,11 @@ manual_placement_needed <- c(
   "../Data/Not_redistributed_data/Starr et al 2025/RR1815_DOoR Dissolved and Particulate Hg.xlsx" =
     "Starr et al. 2025 (Leg 1) - not yet published to its repository. See the comment above RD_016.",
   "../Data/Not_redistributed_data/Starr et al 2025/RR1814_DOoR Dissolved and Particulate Hg.xlsx" =
-    "Starr et al. 2025 (Leg 2) - not yet published to its repository. See the comment above RD_016."
+    "Starr et al. 2025 (Leg 2) - not yet published to its repository. See the comment above RD_016.",
+  "../Data/Not_redistributed_data/Tate_et_al_2025_Site_Information.csv" =
+    "Tate et al. 2025 - ScienceBase is Cloudflare-blocked from automated downloads. See the comment above RD_017.",
+  "../Data/Not_redistributed_data/Tate_et_al_2025_Hg_Concentrations_Water.csv" =
+    "Tate et al. 2025 - same Cloudflare limitation. See the comment above RD_017."
 )
 missing_files <- names(manual_placement_needed)[!file.exists(names(manual_placement_needed))]
 if (length(missing_files) > 0) {
@@ -1245,9 +1249,16 @@ RD_006 <- as.data.frame(apply(RD_006, 2, function(x) gsub("\\s+", "", x))) |>
 
 ### RD-007 - Yue et al 2023 ----
 ### LOD: MeHg = 0.002 ng/L = 10 fM
-### Downloaded directly from Mendeley Data (DOI 10.17632/x7r6mprjb7.1) - verified Sep 2026.
+### Downloaded directly from Mendeley Data (DOI 10.17632/x7r6mprjb7.1) - verified Sep 2026. Mendeley's
+### convenience "public-files" redirect link can intermittently return an error page instead of the
+### file for non-browser requests, so this calls Mendeley's public-api endpoint directly to resolve
+### the real (S3-hosted) file URL first, then downloads that.
+RD_007_resolved_url <- httr::content(
+  httr::GET("https://data.mendeley.com/public-api/datasets/x7r6mprjb7/files/c9fd4361-4f78-4d1b-bc4b-d37e307058dc/file_downloaded"),
+  as = "parsed", type = "application/json"
+)$url
 RD_007_file <- fetch_source(
-  "https://data.mendeley.com/public-files/datasets/x7r6mprjb7/files/c9fd4361-4f78-4d1b-bc4b-d37e307058dc/file_downloaded",
+  RD_007_resolved_url,
   "../Data/Not_redistributed_data/downloaded/Yue_et_al_2023_MeHg_Data.xlsx"
 )
 RD_007 <- read_excel(RD_007_file) |>
@@ -1682,21 +1693,16 @@ RD_016 <- read_excel("../Data/Not_redistributed_data/Starr et al 2025/RR1814_DOo
   ))
 
 ### RD-017 - Tate et al 2025 ----
-### Downloaded directly from USGS ScienceBase (verified Sep 2026). Note: the ScienceBase item ID
+### NOT AUTOMATED: USGS ScienceBase now sits behind a Cloudflare bot-check that blocks direct
+### programmatic downloads (confirmed Sep 2026 - the file URL below 403s even from a real browser
+### until its "Verify you are human" challenge is solved by hand). Note: the ScienceBase item ID
 ### used elsewhere in this script/tracking sheet (67605140d34e03058f2207342) has an extra trailing
 ### digit and 404s - the correct item, confirmed by resolving DOI 10.5066/P14KDQHN, is
-### 67605140d34e03058f220734 (REPOSITORY field below corrected to match).
-RD_017i_file <- fetch_source(
-  "https://www.sciencebase.gov/catalog/file/get/67605140d34e03058f220734?f=__disk__41%2F00%2F1e%2F41001efeebc7d521f99a0a6698e482fb077a57bc",
-  "../Data/Not_redistributed_data/downloaded/Tate_et_al_2025_Site_Information.csv"
-)
-RD_017i <- read_csv(RD_017i_file)
+### 67605140d34e03058f220734 (REPOSITORY field below corrected to match). Re-obtain both files via
+### https://www.sciencebase.gov/catalog/item/67605140d34e03058f220734 if they need refreshing.
+RD_017i <- read_csv("../Data/Not_redistributed_data/Tate_et_al_2025_Site_Information.csv")
 
-RD_017_file <- fetch_source(
-  "https://www.sciencebase.gov/catalog/file/get/67605140d34e03058f220734?f=__disk__bc%2F0a%2Ffb%2Fbc0afba8783c2b67ca8ed4129e0380e00a3ae742",
-  "../Data/Not_redistributed_data/downloaded/Tate_et_al_2025_Hg_Concentrations_Water.csv"
-)
-RD_017 <- read_csv(RD_017_file) |>
+RD_017 <- read_csv("../Data/Not_redistributed_data/Tate_et_al_2025_Hg_Concentrations_Water.csv") |>
   mutate(Sample_Date = mdy(Sample_Date)) |> # Convert to Date
   left_join(RD_017i, by = c("Site_Name", "Cruise_Section")) |>
   filter(Cruise_Section == "A16N" | Cruise_Section == "I05" | Cruise_Section == "S04P" | Cruise_Section == "P16N") |>
