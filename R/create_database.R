@@ -67,10 +67,14 @@ if (length(missing_files) > 0) {
 # (rather than re-downloading on every run) makes repeated runs fast while still keeping the
 # actual data acquisition step - and its source URL - fully visible and versioned in this script.
 # Delete a file under ../Data/Not_redistributed_data/downloaded/ to force a fresh re-download from source.
+# method = "libcurl" is explicit here because RStudio otherwise substitutes its own internal
+# downloader, which has a known intermittent "SSL connect error" bug with some hosts (confirmed
+# Sep 2026: a host that fails this way is fully reachable and serves the file fine outside
+# RStudio's downloader) - libcurl bypasses that substitution.
 fetch_source <- function(url, destfile) {
   if (!file.exists(destfile)) {
     dir.create(dirname(destfile), recursive = TRUE, showWarnings = FALSE)
-    download.file(url, destfile, mode = "wb", quiet = TRUE)
+    download.file(url, destfile, mode = "wb", quiet = TRUE, method = "libcurl")
   }
   destfile
 }
@@ -919,6 +923,7 @@ AP_012 <- AP_012_THG |>
     PUBLISHED_IN_PAPER = "YES",
     DOI_PAPER_REFERENCE = "https://www.sciencedirect.com/science/article/abs/pii/S0304420312000242",
     DATASET_PUBLISHED = "NO",
+    REPOSITORY = "Unpublished dataset, included with author permission",
     COMMENT = "Unpublished dataset, included with author permission",
     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
   ) |>
@@ -998,14 +1003,14 @@ GEOTRACES_FILE <- "../Data/Not_redistributed_data/GEOTRACES/GEOTRACES_IDP2021_Se
 info_RD_002 <- data.frame(
   sub_id = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
   CRUISE_NAME = c("GA01", "GA03", "GA04N", "GApr09", "GIPY06", "GN01", "GN03", "GN04", "GN05", "GP12", "GP16"),
-  PUBLISHED_IN_PAPER = c("YES", "?", "?", "?", "YES", "YES", "YES", "YES", "YES", "?", "?"),
+  PUBLISHED_IN_PAPER = c("YES", "UNKNOWN", "UNKNOWN", "UNKNOWN", "YES", "YES", "YES", "YES", "YES", "UNKNOWN", "UNKNOWN"),
   DOI_PAPER_REFERENCE = c(
-    "https://doi.org/10.5194/bg-15-2309-2018", "?", "?", "?",
+    "https://doi.org/10.5194/bg-15-2309-2018", "", "", "",
     "https://www.sciencedirect.com/science/article/pii/S0016703711002614",
     "https://doi.org/10.1016/j.marchem.2019.103686",
     "https://www.nature.com/articles/s41598-018-32760-0",
     "https://dx.doi.org/10.1021/acsearthspacechem.0c00055",
-    "https://doi.org/10.1016/j.marchem.2020.103855", "?", "?"
+    "https://doi.org/10.1016/j.marchem.2020.103855", "", ""
   ),
   COMMENT = c(
     "Cossa et al. 2018", "", "", "", "Cossa et al. 2011", "Agather et al. 2019", "Wang et al. 2018",
@@ -1071,7 +1076,7 @@ RD_002 <- read_csv(GEOTRACES_FILE,
     CRUISE_NAME == "GA01" ~ "Cossa et al. 2018",
     CRUISE_NAME == "GN01" ~ "Agather et al. 2019",
     CRUISE_NAME == "GIPY06" ~ "Cossa et al. 2011",
-    CRUISE_NAME == "GN03" ~ "Wang et al. 2018", # GN03 previously read separately as ID_0028; now taken from the GEOTRACES bundle to avoid the unresolved author-consent note on the standalone file
+    CRUISE_NAME == "GN03" ~ "Wang et al. 2018",
     TRUE ~ NAME_DATASET
   ))
 
