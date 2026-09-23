@@ -888,6 +888,43 @@ AP_011 <- read_excel("../Data/Data provided by authors/Gosnell et al 2023.xlsx",
     TRUE ~ SPECIES_CONC
   ))
 
+### AP-012 - Hammerschmidt and Bowman 2012 ----
+### DL: THg = 0.05 pM, MMHg = 2 fM
+AP_012i <- read_excel("../Data/Data provided by authors/Hammerschmidt and Bowman 2012.xlsx", sheet = "SaFe", skip = 2)
+AP_012_MMHG <- AP_012i |> select("Depth...1", "MMHg") |> drop_na() |> rename(DEPTH = "Depth...1") |> mutate(DEPTH = round(DEPTH, 0))
+AP_012_DMHG <- AP_012i |> select("Depth...6", "DMHg") |> drop_na() |> rename(DEPTH = "Depth...6") |> mutate(DEPTH = round(DEPTH, 0))
+AP_012_MMHGP <- AP_012i |> select("PartMMHgz", "PartMMHg") |> drop_na() |> rename(DEPTH = "PartMMHgz") |> mutate(DEPTH = round(DEPTH, 0))
+AP_012_THG <- AP_012i |> select("HgTZ", "HgT") |> drop_na() |> rename(DEPTH = "HgTZ") |> mutate(DEPTH = round(DEPTH, 0))
+AP_012_SAL <- AP_012i |> select("PrDM", "Sal00") |> drop_na() |> rename(DEPTH = "PrDM") |> mutate(DEPTH = round(DEPTH, 0))
+AP_012_TEMP <- AP_012i |> select("TempZ", "Temp") |> drop_na() |> rename(DEPTH = "TempZ") |> mutate(DEPTH = round(DEPTH, 0))
+
+AP_012 <- AP_012_THG |>
+  full_join(AP_012_MMHG, by = "DEPTH") |>
+  full_join(AP_012_DMHG, by = "DEPTH") |>
+  full_join(AP_012_MMHGP, by = "DEPTH") |>
+  left_join(AP_012_SAL, by = "DEPTH") |>
+  left_join(AP_012_TEMP, by = "DEPTH") |>
+  rename(MMHG_D = "MMHg", DMHG_D = "DMHg", THG_D = "HgT", MMHG_P = "PartMMHg", SALINITY_PSU = "Sal00", TEMPERATURE_C = "Temp") |>
+  mutate(LATITUDE = 30, LONGITUDE = -140) |>
+  dplyr::select(LATITUDE, LONGITUDE, DEPTH, THG_D, MMHG_D, DMHG_D, MMHG_P, SALINITY_PSU, TEMPERATURE_C) |>
+  mutate(
+    ID_DATASET = "AP-012",
+    YEAR = 2009,
+    MONTH = 5,
+    NAME_DATASET = "Hammerschmidt and Bowman 2012",
+    PUBLISHED_IN_PAPER = "YES",
+    DOI_PAPER_REFERENCE = "https://www.sciencedirect.com/science/article/abs/pii/S0304420312000242",
+    DATASET_PUBLISHED = "NO",
+    COMMENT = "Unpublished dataset, included with author permission",
+    ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
+  ) |>
+  pivot_longer(THG_D:MMHG_P, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
+  mutate(SPECIES_CONC = case_when(
+    SPECIES_NAME == "THG_D" & SPECIES_CONC <= 0.05 ~ (-1 * SPECIES_CONC),
+    SPECIES_NAME == "MMHG_D" & SPECIES_CONC <= 2 ~ (-1 * SPECIES_CONC),
+    TRUE ~ SPECIES_CONC
+  ))
+
 ### RD - repository-downloaded (auto-fetched, or manually placed when auto-fetch isn't possible) ----
 
 ### RD-001 - Soerensen et al 2018 ----
@@ -1806,7 +1843,6 @@ RD_020 <- read_excel(RD_020_file) |>
 #   AP-008 Mastromonaco et al. 2017a - https://doi.org/10.1016/j.marchem.2017.03.001
 #   AP-009 Mastromonaco et al. 2017b - https://doi.org/10.1016/j.marchem.2017.02.003
 #   AP-010 Chen et al. 2024 (AUR) - https://www.sciencedirect.com/science/article/pii/S0043135424006936
-#   AP-012 Hammerschmidt and Bowman 2012 - https://www.sciencedirect.com/science/article/abs/pii/S0304420312000242
 #   AP-013 Eom et al. 2025 (AUR) - https://www.sciencedirect.com/science/article/pii/S026974912500627X
 #   AP-014 Carrasco et al. 2024 (AUR) - https://www.sciencedirect.com/science/article/pii/S0048969723062708
 #   AP-015 Yang et al. 2023 (AUR) - https://www.sciencedirect.com/science/article/pii/S0043135423005869
@@ -2123,42 +2159,6 @@ RD_020 <- read_excel(RD_020_file) |>
 #     TRUE ~ SPECIES_CONC
 #   ))
 
-### AP-012 - Hammerschmidt and Bowman 2012 ----
-### DL: THg = 0.05 pM, MMHg = 2 fM
-# AP_012i <- read_excel("../Data/Data provided by authors/Hammerschmidt and Bowman 2012.xlsx", sheet = "SaFe")
-# AP_012_MMHG <- AP_012i |> select("Depth...1", "MMHg") |> drop_na() |> rename(DEPTH = "Depth...1") |> mutate(DEPTH = round(DEPTH, 0))
-# AP_012_DMHG <- AP_012i |> select("Depth...6", "DMHg") |> drop_na() |> rename(DEPTH = "Depth...6") |> mutate(DEPTH = round(DEPTH, 0))
-# AP_012_MMHGP <- AP_012i |> select("PartMMHgz", "PartMMHg") |> drop_na() |> rename(DEPTH = "PartMMHgz") |> mutate(DEPTH = round(DEPTH, 0))
-# AP_012_THG <- AP_012i |> select("HgTZ", "HgT") |> drop_na() |> rename(DEPTH = "HgTZ") |> mutate(DEPTH = round(DEPTH, 0))
-# AP_012_SAL <- AP_012i |> select("PrDM", "Sal00") |> drop_na() |> rename(DEPTH = "PrDM") |> mutate(DEPTH = round(DEPTH, 0))
-# AP_012_TEMP <- AP_012i |> select("TempZ", "Temp") |> drop_na() |> rename(DEPTH = "TempZ") |> mutate(DEPTH = round(DEPTH, 0))
-#
-# AP_012 <- AP_012_THG |>
-#   full_join(AP_012_MMHG, by = "DEPTH") |>
-#   full_join(AP_012_DMHG, by = "DEPTH") |>
-#   full_join(AP_012_MMHGP, by = "DEPTH") |>
-#   left_join(AP_012_SAL, by = "DEPTH") |>
-#   left_join(AP_012_TEMP, by = "DEPTH") |>
-#   rename(MMHG_D = "MMHg", DMHG_D = "DMHg", THG_D = "HgT", MMHG_P = "PartMMHg", SALINITY_PSU = "Sal00", TEMPERATURE_C = "Temp") |>
-#   mutate(LATITUDE = 30, LONGITUDE = -140) |>
-#   dplyr::select(LATITUDE, LONGITUDE, DEPTH, THG_D, MMHG_D, DMHG_D, MMHG_P, SALINITY_PSU, TEMPERATURE_C) |>
-#   mutate(
-#     ID_DATASET = "AP-012",
-#     YEAR = 2009,
-#     MONTH = 5,
-#     NAME_DATASET = "Hammerschmidt and Bowman 2012",
-#     PUBLISHED_IN_PAPER = "YES",
-#     DOI_PAPER_REFERENCE = "https://www.sciencedirect.com/science/article/abs/pii/S0304420312000242",
-#     DATASET_PUBLISHED = "NO",
-#     COMMENT = "Contact author before use; not yet cleared for redistribution",
-#     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
-#   ) |>
-#   pivot_longer(THG_D:MMHG_P, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
-#   mutate(SPECIES_CONC = case_when(
-#     SPECIES_NAME == "THG_D" & SPECIES_CONC <= 0.05 ~ (-1 * SPECIES_CONC),
-#     SPECIES_NAME == "MMHG_D" & SPECIES_CONC <= 2 ~ (-1 * SPECIES_CONC),
-#     TRUE ~ SPECIES_CONC
-#   ))
 
 ### AP-013 - Eom et al. 2025 ----
 # AP_013 <- read_excel("../Data/Data provided by authors/Eom et al 2025.xlsx", skip = 1) |>
@@ -2263,7 +2263,7 @@ DATA_COMBINED <- bind_rows(
   # MD - monitoring data
   MD_001,
   # AP - author-permitted (unpublished, with consent)
-  AP_001, AP_002, AP_007, AP_011,
+  AP_001, AP_002, AP_007, AP_011, AP_012,
   # RD - repository-downloaded
   RD_001, RD_002, RD_003, RD_004, RD_005, RD_006, RD_007, RD_008, RD_009, RD_010,
   RD_011, RD_012, RD_013, RD_014, RD_015, RD_016, RD_017, RD_018, RD_019, RD_020
