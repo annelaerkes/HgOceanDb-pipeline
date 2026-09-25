@@ -1851,8 +1851,6 @@ RD_020 <- read_excel(RD_020_file) |>
 #   AP-004 Kim et al. 2017 (2 cruises) - https://doi.org/10.1021/acs.est.6b04238
 #   AP-005 Yang et al. 2017 - https://doi.org/10.1016/j.dsr.2017.10.009
 #   AP-006 Lamborg unp. - https://doi.org/10.1016/j.chemgeo.2018.05.040
-#   AP-008 Mastromonaco et al. 2017a - https://doi.org/10.1016/j.marchem.2017.03.001
-#   AP-009 Mastromonaco et al. 2017b - https://doi.org/10.1016/j.marchem.2017.02.003
 #   AP-010 Chen et al. 2024 (AUR) - https://www.sciencedirect.com/science/article/pii/S0043135424006936
 #   AP-013 Eom et al. 2025 (AUR) - https://www.sciencedirect.com/science/article/pii/S026974912500627X
 #   AP-014 Carrasco et al. 2024 (AUR) - https://www.sciencedirect.com/science/article/pii/S0048969723062708
@@ -1992,133 +1990,141 @@ RD_020 <- read_excel(RD_020_file) |>
 
 ### AP-008 - Mastromonaco et al. 2017a ----
 ### DL: THG ~ 0.3-1.2 pM, DGM = 0.0015 pM, MeHg = 5-6.5 fM
-# AP_008a <- read_csv("../Data/Data provided by authors/Mastromonaco et al 2017a - summer.csv") |>
-#   rename(
-#     STATION = "Station", DATE = "yyyy-mm-dd Thh:mm", LONGITUDE = "Longitude [degrees_east]", LATITUDE = "Latitude [degrees_north]",
-#     TEMPERATURE_C = "T090C", SALINITY_PSU = "Sal00", DEPTH = "Depth [m]",
-#     THG = "HgTot [ng L-1]", DGM = "DGM [pg L-1]", MEHG = "MeHg [pg L-1]"
-#   ) |>
-#   mutate(
-#     YEAR = year(DATE), MONTH = month(DATE),
-#     THG = THG * 1000 / 200, DGM = DGM / 200, MEHG = MEHG * 1000 / 200
-#   ) |>
-#   dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, THG, DGM, MEHG, TEMPERATURE_C, SALINITY_PSU) |>
-#   mutate(
-#     ID_DATASET = "AP-008",
-#     NAME_DATASET = "Mastromonaco et al. 2017a",
-#     CRUISE_NAME = "OSO 1011",
-#     PUBLISHED_IN_PAPER = "YES",
-#     DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2017.03.001",
-#     DATASET_PUBLISHED = "NO",
-#     COMMENT = "Contact author before use; not yet cleared for redistribution",
-#     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
-#   ) |>
-#   pivot_longer(THG:MEHG, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
-#   mutate(SPECIES_CONC = case_when(
-#     SPECIES_NAME == "THG" & SPECIES_CONC <= 0.75 ~ (-1 * SPECIES_CONC),
-#     SPECIES_NAME == "DGM" & SPECIES_CONC <= 0.0015 ~ (-1 * SPECIES_CONC),
-#     SPECIES_NAME == "MEHG" & SPECIES_CONC <= 6.5 ~ (-1 * SPECIES_CONC),
-#     TRUE ~ SPECIES_CONC
-#   ))
-#
-# AP_008b <- read_csv("../Data/Data provided by authors/Mastromonaco et al 2017a - spring.csv") |>
-#   rename(
-#     STATION = "Station", DATE = "yyyy-mm-dd Thh:mm", LONGITUDE = "Longitude [degrees_east]", LATITUDE = "Latitude [degrees_north]",
-#     TEMPERATURE_C = "Temperature [C]", SALINITY_PSU = "Salinity [psu]", DEPTH = "Depth [m]",
-#     THG = "HgTot [ng L-1]", DGM = "DGM [pg L-1]", MEHG = "MeHg [pg L-1]"
-#   ) |>
-#   mutate(
-#     YEAR = year(DATE), MONTH = month(DATE),
-#     THG = THG * 1000 / 200, DGM = DGM / 200, MEHG = MEHG * 1000 / 200
-#   ) |>
-#   dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, THG, DGM, MEHG, TEMPERATURE_C, SALINITY_PSU) |>
-#   mutate(
-#     ID_DATASET = "AP-008",
-#     NAME_DATASET = "Mastromonaco et al. 2017a",
-#     PUBLISHED_IN_PAPER = "YES",
-#     DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2017.03.001",
-#     DATASET_PUBLISHED = "NO",
-#     COMMENT = "Contact author before use; not yet cleared for redistribution",
-#     ID_SAMPLE = paste("S", ID_DATASET, 500:(n() + 499), sep = "_")
-#   ) |>
-#   pivot_longer(THG:MEHG, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
-#   mutate(SPECIES_CONC = case_when(
-#     SPECIES_NAME == "THG" & SPECIES_CONC <= 0.75 ~ (-1 * SPECIES_CONC),
-#     SPECIES_NAME == "DGM" & SPECIES_CONC <= 0.0015 ~ (-1 * SPECIES_CONC),
-#     SPECIES_NAME == "MEHG" & SPECIES_CONC <= 6.5 ~ (-1 * SPECIES_CONC),
-#     TRUE ~ SPECIES_CONC
-#   ))
-#
-# AP_008c <- read_csv("../Data/Data provided by authors/Mastromonaco et al 2017a - winter.csv") |>
-#   rename(
-#     STATION = "Station", DATE = "yyyy-mm-dd Thh:mm", LONGITUDE = "Longitude [degrees_east]", LATITUDE = "Latitude [degrees_north]",
-#     TEMPERATURE_C = "Temperature [C]", SALINITY_PSU = "Salinity [psu]", DEPTH = "Depth [m]",
-#     THG = "HgTot [ng L-1]", DGM = "DGM [pg L-1]", MEHG = "MeHg [pg L-1]"
-#   ) |>
-#   mutate(
-#     YEAR = year(DATE), MONTH = month(DATE),
-#     THG = THG * 1000 / 200, DGM = DGM / 200, MEHG = MEHG * 1000 / 200
-#   ) |>
-#   dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, THG, DGM, MEHG, TEMPERATURE_C, SALINITY_PSU) |>
-#   mutate(
-#     ID_DATASET = "AP-008",
-#     NAME_DATASET = "Mastromonaco et al. 2017a",
-#     PUBLISHED_IN_PAPER = "YES",
-#     DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2017.03.001",
-#     DATASET_PUBLISHED = "NO",
-#     COMMENT = "Contact author before use; not yet cleared for redistribution",
-#     ID_SAMPLE = paste("S", ID_DATASET, 1000:(n() + 999), sep = "_")
-#   ) |>
-#   pivot_longer(THG:MEHG, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
-#   mutate(SPECIES_CONC = case_when(
-#     SPECIES_NAME == "THG" & SPECIES_CONC <= 0.75 ~ (-1 * SPECIES_CONC),
-#     SPECIES_NAME == "DGM" & SPECIES_CONC <= 0.0015 ~ (-1 * SPECIES_CONC),
-#     SPECIES_NAME == "MEHG" & SPECIES_CONC <= 6.5 ~ (-1 * SPECIES_CONC),
-#     TRUE ~ SPECIES_CONC
-#   ))
-#
-# AP_008 <- bind_rows(AP_008a, AP_008b, AP_008c)
+AP_008a <- read_csv("../Data/Data provided by authors/Mastromonaco et al 2017a-1.csv", skip = 2) |>
+  rename(
+    STATION = "Station", DATE = "yyyy-mm-dd Thh:mm", LONGITUDE = "Longitude [degrees_east]", LATITUDE = "Latitude [degrees_north]",
+    TEMPERATURE_C = "T090C", SALINITY_PSU = "Sal00", DEPTH = "Depth [m]",
+    THG = "HgTot [ng L-1]", DGM = "DGM [pg L-1]", MEHG = "MeHg [pg L-1]"
+  ) |>
+  mutate(
+    YEAR = year(DATE), MONTH = month(DATE),
+    THG = THG * 1000 / 200, DGM = DGM / 200, MEHG = MEHG * 1000 / 200
+  ) |>
+  dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, THG, DGM, MEHG, TEMPERATURE_C, SALINITY_PSU) |>
+  mutate(
+    ID_DATASET = "AP-008",
+    NAME_DATASET = "Mastromonaco et al. 2017a",
+    CRUISE_NAME = "OSO 1011",
+    PUBLISHED_IN_PAPER = "YES",
+    DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2017.03.001",
+    DATASET_PUBLISHED = "NO",
+    REPOSITORY = "Unpublished dataset, included with author permission",
+    COMMENT = "Unpublished dataset, included with author permission",
+    ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
+  ) |>
+  pivot_longer(THG:MEHG, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
+  mutate(SPECIES_CONC = case_when(
+    SPECIES_NAME == "THG" & SPECIES_CONC <= 0.75 ~ (-1 * SPECIES_CONC),
+    SPECIES_NAME == "DGM" & SPECIES_CONC <= 0.0015 ~ (-1 * SPECIES_CONC),
+    SPECIES_NAME == "MEHG" & SPECIES_CONC <= 6.5 ~ (-1 * SPECIES_CONC),
+    TRUE ~ SPECIES_CONC
+  ))
+
+AP_008b <- read_csv("../Data/Data provided by authors/Mastromonaco et al 2017a-2.csv", skip = 2) |>
+  rename(
+    STATION = "Station", DATE = "yyyy-mm-dd Thh:mm", LONGITUDE = "Longitude [degrees_east]", LATITUDE = "Latitude [degrees_north]",
+    TEMPERATURE_C = "Temperature [C]", SALINITY_PSU = "Salinity [psu]", DEPTH = "Depth [m]",
+    THG = "HgTot [ng L-1]", DGM = "DGM [pg L-1]", MEHG = "MeHg [pg L-1]"
+  ) |>
+  mutate(
+    YEAR = year(DATE), MONTH = month(DATE),
+    THG = THG * 1000 / 200, DGM = DGM / 200, MEHG = MEHG * 1000 / 200
+  ) |>
+  dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, THG, DGM, MEHG, TEMPERATURE_C, SALINITY_PSU) |>
+  mutate(
+    ID_DATASET = "AP-008",
+    NAME_DATASET = "Mastromonaco et al. 2017a",
+    PUBLISHED_IN_PAPER = "YES",
+    DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2017.03.001",
+    DATASET_PUBLISHED = "NO",
+    REPOSITORY = "Unpublished dataset, included with author permission",
+    COMMENT = "Unpublished dataset, included with author permission",
+    ID_SAMPLE = paste("S", ID_DATASET, 500:(n() + 499), sep = "_")
+  ) |>
+  pivot_longer(THG:MEHG, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
+  mutate(SPECIES_CONC = case_when(
+    SPECIES_NAME == "THG" & SPECIES_CONC <= 0.75 ~ (-1 * SPECIES_CONC),
+    SPECIES_NAME == "DGM" & SPECIES_CONC <= 0.0015 ~ (-1 * SPECIES_CONC),
+    SPECIES_NAME == "MEHG" & SPECIES_CONC <= 6.5 ~ (-1 * SPECIES_CONC),
+    TRUE ~ SPECIES_CONC
+  ))
+
+AP_008c <- read_csv("../Data/Data provided by authors/Mastromonaco et al 2017a-3.csv", skip = 2) |>
+  rename(
+    STATION = "Station", DATE = "yyyy-mm-dd Thh:mm", LONGITUDE = "Longitude [degrees_east]", LATITUDE = "Latitude [degrees_north]",
+    TEMPERATURE_C = "Temperature [C]", SALINITY_PSU = "Salinity [psu]", DEPTH = "Depth [m]",
+    THG = "HgTot [ng L-1]", DGM = "DGM [pg L-1]", MEHG = "MeHg [pg L-1]"
+  ) |>
+  mutate(
+    YEAR = year(DATE), MONTH = month(DATE),
+    THG = THG * 1000 / 200, DGM = DGM / 200, MEHG = MEHG * 1000 / 200
+  ) |>
+  dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, THG, DGM, MEHG, TEMPERATURE_C, SALINITY_PSU) |>
+  mutate(
+    ID_DATASET = "AP-008",
+    NAME_DATASET = "Mastromonaco et al. 2017a",
+    PUBLISHED_IN_PAPER = "YES",
+    DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2017.03.001",
+    DATASET_PUBLISHED = "NO",
+    REPOSITORY = "Unpublished dataset, included with author permission",
+    COMMENT = "Unpublished dataset, included with author permission",
+    ID_SAMPLE = paste("S", ID_DATASET, 1000:(n() + 999), sep = "_")
+  ) |>
+  pivot_longer(THG:MEHG, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC") |>
+  mutate(SPECIES_CONC = case_when(
+    SPECIES_NAME == "THG" & SPECIES_CONC <= 0.75 ~ (-1 * SPECIES_CONC),
+    SPECIES_NAME == "DGM" & SPECIES_CONC <= 0.0015 ~ (-1 * SPECIES_CONC),
+    SPECIES_NAME == "MEHG" & SPECIES_CONC <= 6.5 ~ (-1 * SPECIES_CONC),
+    TRUE ~ SPECIES_CONC
+  ))
+
+AP_008 <- bind_rows(AP_008a, AP_008b, AP_008c)
 
 ### AP-009 - Mastromonaco et al. 2017b ----
-# AP_009a <- read_csv("../Data/Data provided by authors/Mastromonaco et al 2017b - Fenice 2011.csv") |>
-#   rename(
-#     STATION = "Station", DATE = "yyyy-mm-dd Thh:mm", LONGITUDE = "Longitude [degrees_east]", LATITUDE = "Latitude [degrees_north]",
-#     DEPTH = "Depth [m]", DGM = "DGM [pg L-1]"
-#   ) |>
-#   mutate(YEAR = year(DATE), MONTH = month(DATE), DGM = DGM / 200) |>
-#   dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, DGM) |>
-#   mutate(
-#     ID_DATASET = "AP-009",
-#     NAME_DATASET = "Mastromonaco et al. 2017b",
-#     CRUISE_NAME = "Fenice 2011",
-#     PUBLISHED_IN_PAPER = "YES",
-#     DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2017.02.003",
-#     DATASET_PUBLISHED = "NO",
-#     COMMENT = "Contact author before use; not yet cleared for redistribution",
-#     ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
-#   ) |>
-#   pivot_longer(DGM, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC")
-#
-# AP_009b <- read_csv("../Data/Data provided by authors/Mastromonaco et al 2017b - Fenice 2012.csv") |>
-#   rename(
-#     STATION = "Station", DATE = "yyyy-mm-dd Thh:mm", LONGITUDE = "Longitude [degrees_east]", LATITUDE = "Latitude [degrees_north]",
-#     DEPTH = "Depth [m]", DGM = "DGM [pg L-1]"
-#   ) |>
-#   mutate(YEAR = year(DATE), MONTH = month(DATE), DGM = DGM / 200) |>
-#   dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, DGM) |>
-#   mutate(
-#     ID_DATASET = "AP-009",
-#     NAME_DATASET = "Mastromonaco et al. 2017b",
-#     CRUISE_NAME = "Fenice 2012", # OBS: something on lat/lon looked wrong in the source file - re-check before use
-#     PUBLISHED_IN_PAPER = "YES",
-#     DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2017.02.003",
-#     DATASET_PUBLISHED = "NO",
-#     COMMENT = "Contact author before use; not yet cleared for redistribution",
-#     ID_SAMPLE = paste("S", ID_DATASET, 500:(n() + 499), sep = "_")
-#   ) |>
-#   pivot_longer(DGM, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC")
-#
-# AP_009 <- bind_rows(AP_009a, AP_009b)
+AP_009a <- read_csv("../Data/Data provided by authors/Mastromonaco et al 2017b-1.csv", skip = 2) |>
+  rename(
+    STATION = "Station", DATE = "yyyy-mm-dd Thh:mm", LONGITUDE = "Longitude [degrees_east]", LATITUDE = "Latitude [degrees_north]",
+    DEPTH = "Depth [m]", DGM = "DGM [pg L-1]"
+  ) |>
+  mutate(YEAR = year(DATE), MONTH = month(DATE), DGM = DGM / 200) |>
+  dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, DGM) |>
+  mutate(
+    ID_DATASET = "AP-009",
+    NAME_DATASET = "Mastromonaco et al. 2017b",
+    CRUISE_NAME = "Fenice 2011",
+    PUBLISHED_IN_PAPER = "YES",
+    DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2017.02.003",
+    DATASET_PUBLISHED = "NO",
+    REPOSITORY = "Unpublished dataset, included with author permission",
+    COMMENT = "Unpublished dataset, included with author permission",
+    ID_SAMPLE = paste("S", ID_DATASET, 1:n(), sep = "_")
+  ) |>
+  pivot_longer(DGM, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC")
+
+AP_009b <- read_csv("../Data/Data provided by authors/Mastromonaco et al 2017b-2.csv", skip = 2) |>
+  # Longitude/latitude columns are swapped in the source file (confirmed by plotting: as
+  # labeled, points fall in the Red Sea; swapped, they fall in the western Mediterranean,
+  # consistent with the Fenice 2011 cruise) - renamed the other way round to correct for this.
+  rename(
+    STATION = "Station", DATE = "yyyy-mm-dd Thh:mm", LATITUDE = "Longitude [degrees_east]", LONGITUDE = "Latitude [degrees_north]",
+    DEPTH = "Depth [m]", DGM = "DGM [pg L-1]"
+  ) |>
+  mutate(YEAR = year(DATE), MONTH = month(DATE), DGM = DGM / 200) |>
+  dplyr::select(LATITUDE, LONGITUDE, DEPTH, YEAR, MONTH, DGM) |>
+  mutate(
+    ID_DATASET = "AP-009",
+    NAME_DATASET = "Mastromonaco et al. 2017b",
+    CRUISE_NAME = "Fenice 2012",
+    PUBLISHED_IN_PAPER = "YES",
+    DOI_PAPER_REFERENCE = "https://doi.org/10.1016/j.marchem.2017.02.003",
+    DATASET_PUBLISHED = "NO",
+    REPOSITORY = "Unpublished dataset, included with author permission",
+    COMMENT = "Unpublished dataset, included with author permission",
+    ID_SAMPLE = paste("S", ID_DATASET, 500:(n() + 499), sep = "_")
+  ) |>
+  pivot_longer(DGM, names_to = "SPECIES_NAME", values_to = "SPECIES_CONC")
+
+AP_009 <- bind_rows(AP_009a, AP_009b)
 
 ### AP-010 - Chen et al. 2024 ----
 ### DL: MeHg = 0.02 ng/L = 100 fM
@@ -2274,7 +2280,7 @@ DATA_COMBINED <- bind_rows(
   # MD - monitoring data
   MD_001,
   # AP - author-permitted (unpublished, with consent)
-  AP_001, AP_002, AP_007, AP_011, AP_012,
+  AP_001, AP_002, AP_007, AP_008, AP_009, AP_011, AP_012,
   # RD - repository-downloaded
   RD_001, RD_002, RD_003, RD_004, RD_005, RD_006, RD_007, RD_008, RD_009, RD_010,
   RD_011, RD_012, RD_013, RD_014, RD_015, RD_016, RD_017, RD_018, RD_019, RD_020
